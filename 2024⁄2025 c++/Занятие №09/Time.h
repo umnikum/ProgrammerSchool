@@ -33,10 +33,10 @@ public:
 	}
 	
 	Time operator+(const Time &time)const{
-		return Time{to_seconds() + time.to_seconds};
+		return Time{to_seconds() + time.to_seconds()};
 	}
 	Time operator-(const Time &time)const{
-		return Time{to_seconds() - time.to_seconds};
+		return Time{to_seconds() - time.to_seconds()};
 	}
 
 	bool operator==(const Time &time)const{
@@ -56,7 +56,7 @@ public:
 	}
 	friend std::string to_string(const Time &time){
 		std::stringstream ss;
-		ss << hours << ":" << minutes << " : " << seconds;
+		ss << time.hours << ":" << time.minutes << " : " << time.seconds;
 		return ss.str();
 	}
 };
