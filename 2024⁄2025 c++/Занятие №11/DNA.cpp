@@ -27,32 +27,42 @@ void print(const std::map<char, int> &counters){
 			std::cout << pair.first << ": " << pair.second << "\n";
 }
 
+void clone(const std::map<char, int> &counters_1, std::map<char, int> &counters_2){
+	counters_2.clear();
+	for(auto pair:counters_1)
+		if(pair.second > 0)
+			counters_2[pair.first] = pair.second;
+}
+
 int main() {
-	std::map<char, int> counters_1{}, counters_2{};
+	std::map<char, int> counters_1{}, counters_2{}, counters_2_mem{};
 	std::string line_1, line_2;
 	std::ifstream ifs{"INPUT.TXT"};
 	ifs >> line_1 >> line_2;
 	ifs.close();
 	int len, begin_1=0, begin_2=0;
 	bool solved = false;
-	for(len = std::min(line_1.size(), line_2.size()); len > 0; --len){
+	for(len = std::min(line_1.size(), line_2.size()); len > 0 and not solved; --len){
 		counters_1.clear();
 		counters_2.clear();
 		for(begin_1=0; begin_1<len; ++begin_1){
 			++counters_1[line_1[begin_1]];
 			++counters_2[line_2[begin_1]];
-			if(is_equal(counters_1, counters_2)){
-				solved = true;
-				break;
-			}
 		}
-		for(begin_1=0; begin_1<line_1.size()-len; ++begin_1){
-			for(begin_2=0; begin_2<line_2.size()-len; ++begin_2){
+		if(is_equal(counters_1, counters_2)){
+			solved = true;
+			begin_1 = 0;
+			begin_2 = 0;
+			break;
+		}
+		clone(counters_2, counters_2_mem);
+		for(begin_1=0; begin_1<=line_1.size()-len; ++begin_1){
+			for(begin_2=0; begin_2<=line_2.size()-len; ++begin_2){
 				if(is_equal(counters_1, counters_2)){
 					solved = true;
 					break;
 				}else{
-					if(begin_2 < line_2.size()-len-1){
+					if(begin_2 < line_2.size()-len){
 						--counters_2[line_2[begin_2]];
 						++counters_2[line_2[begin_2+len]];
 					}
@@ -60,16 +70,12 @@ int main() {
 			}
 			if(solved)
 				break;
-			if(begin_1 < line_1.size()-len-1){
-				--counters_1[line_2[begin_2]];
-				++counters_1[line_2[begin_2+len]];
+			if(begin_1 < line_1.size()-len){
+				--counters_1[line_1[begin_1]];
+				++counters_1[line_1[begin_1+len]];
 			}
-			counters_2.clear();
-			for(begin_2=0; begin_2<len; ++begin_2)
-				++counters_2[line_2[begin_2]];
+			clone(counters_2_mem, counters_2);
 		}
-		if(solved)
-			break;
 	}
 	std::ofstream ofs{"OUTPUT.TXT"};
 	if(not solved)
