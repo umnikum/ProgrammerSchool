@@ -7,6 +7,32 @@
 
 using namespace std;
 
+//backtracking - реализация функции шага
+int step(const int &last, vector<int> &trail, const int &n, const int *matrix){
+	int c = trail.back();
+	//Если нашли путь в конец идём туда
+	if(matrix[c][last] != 0)
+		return matrix[c][last];
+	//Иначе перебираем все города в которые можно пройти из последнего
+	for(int i=0; i<n; ++i){
+		//Если путь в такой город есть, делаем шаг в этот город
+		if(matrix[c][i] != 0){
+			//if("i не встречался в пути"){} - TODO подумать как это реализовать самостоятельно!
+			trail.push_back(i);
+			int len = step(last, trail, n, matrix);
+			//Не забываем вернуться из следующего города
+			trail.pop_back();
+			//Если нашли путь, возвращаемся дальше, набирая длинну пути в обратном направлении
+			if(len > 0){
+				return len + matrix[c][i];
+			}
+		}
+	}
+	//Если ничего найти не удалось, возвращаем 0, сообщающий о неудаче поиска
+	return 0;
+}
+
+
 int main(){
 	//Используем входной файл с матрицей
 	ifstream ifs{"input.txt"};
